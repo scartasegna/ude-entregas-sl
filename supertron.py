@@ -10,7 +10,7 @@ import os
 
 # lanzar un proceso secundario (vía pipas, -u sin buffer)
 proceso = subprocess.Popen(
-    ['python3', "-u", "ranginator.py"],
+    ['python3', "-u", "numetron.py"],
     stdin=subprocess.PIPE,
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE,
@@ -20,6 +20,7 @@ for fd in proceso.stdout.fileno(), proceso.stderr.fileno():
     fl = fcntl.fcntl(fd, fcntl.F_GETFL)
     fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
 
+#Se inician las diferentes variables a utilizar en el codigo
 error = mensaje = ''
 x = '50'
 inicio = 1
@@ -27,6 +28,8 @@ fin = 100
 pasada = 0
 antF = fin
 antI = inicio
+
+#Mientras se reciban mensajes, seguiremos ejecutando codigo
 while True:
     print("Pasada {}".format(pasada))
     disp = select.select([proceso.stderr], [], [], 1)[0]
@@ -37,12 +40,13 @@ while True:
             print("ERROR: *%s*" % error)
             break
 
+#Se recibe el mensaje hasta que se detecta en caracter de fin de linea
     while True:
         char = proceso.stdout.read(1)
         if not char or char == "\n":
             break
         mensaje += char.lower()
-    #mensaje += proceso.stdout.readline(28).decode('utf8')
+    
     print("mensaje recibido " + mensaje)
 
     if mensaje.startswith('adivi'):
